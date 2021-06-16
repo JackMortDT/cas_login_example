@@ -5,8 +5,10 @@ defmodule Cas.Model.User do
   alias __MODULE__
   alias Cas.Network.ManagerRequest
 
+  @security_url Application.get_env(:cas, CasWeb.Endpoint)[:security_config]
+
   def get_name(username) do
-    "v1/api/users/roles?userName=#{username}&portalName=faltas-y-suplencias"
+    "#{@security_url}v1/api/users/roles?userName=#{username}&portalName=faltas-y-suplencias"
     |> ManagerRequest.get_security_user()
     |> case do
       :ok ->

@@ -7,8 +7,10 @@ defmodule Cas.Network.Menu do
 
   alias __MODULE__
 
+  @security_url Application.get_env(:cas, CasWeb.Endpoint)[:security_config]
+
   def get_menu(name, token_info) do
-    ManagerRequest.get_security_user("/v2/api/user/profile/#{name}/faltas-y-suplencias")
+    ManagerRequest.get_security_user("#{@security_url}/v2/api/user/profile/#{name}/faltas-y-suplencias")
     |> case do
       :ok ->
         %Menu{}
@@ -41,7 +43,7 @@ defmodule Cas.Network.Menu do
   end
 
   def get_campus_and_division(name) do
-    case ManagerRequest.get_security_user("v2/api/user/#{name}/portal/faltas-y-suplencias") do
+    case ManagerRequest.get_security_user("#{@security_url}v2/api/user/#{name}/portal/faltas-y-suplencias") do
       :ok ->
         []
       profile ->
