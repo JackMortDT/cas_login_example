@@ -4,6 +4,8 @@ defmodule Cas.Oauth.Cas do
   """
   use OAuth2.Strategy
 
+  alias Cas.Network.ManagerRequest
+
   def client(params) do
     OAuth2.Client.new([
       strategy: OAuth2.Strategy.Password,
@@ -11,8 +13,8 @@ defmodule Cas.Oauth.Cas do
       authorize_url: "https://cas-qa.ebc.edu.mx/cas/oidc/authorize",
       token_url: "https://cas-qa.ebc.edu.mx/cas/oidc/accessToken",
       redirect_uri: "http://localhost:4000/auth/callback",
-      client_id: "",
-      client_secret: "",
+      client_id: "TestService",
+      client_secret: "imNotASecret",
       params: params
     ])
   end
@@ -36,5 +38,11 @@ defmodule Cas.Oauth.Cas do
     token_response.access_token
     |> Cas.Serializer.decode!()
     |> Cas.Util.GeneralUtil.convert_map()
+  end
+
+  def validate_token(token) do
+    url = "https://cas-qa.ebc.edu.mx/cas/oidc/profile"
+    headers = ["Authorization": "Bearer #{token}", "Accept": "Application/json; Charset=utf-8"]
+    ManagerRequest.get_security_user(url, headers)
   end
 end
