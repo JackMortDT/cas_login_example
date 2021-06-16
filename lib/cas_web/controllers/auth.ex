@@ -4,6 +4,7 @@ defmodule CasWeb.Auth do
 
   alias CasWeb.Router.Helpers, as: Routes
   alias Cas.Network.Menu
+  alias Cas.Oauth.Cas
 
   def init(opts), do: opts
 
@@ -41,8 +42,19 @@ defmodule CasWeb.Auth do
   end
 
   def authenticate_user(conn, _opts) do
-    if conn.assigns.current_user do
-      conn
+    user_info = conn.assigns.current_user
+    if user_info do
+      user_info.access_token
+        |> Cas.validate_token()
+        |> case do
+          :ok ->
+            conn
+              |> put_flash(:error, "Sesión expirada, inicia sesión nuevamente")
+              |> logout()
+              |> redirect(to: Routes.session_path(conn, :new))
+          _body ->
+            conn
+        end
     else
       conn
       |> put_flash(:error, "Necesitas estar logueado para entrar a esta página")
