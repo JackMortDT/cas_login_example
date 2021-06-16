@@ -4,10 +4,10 @@
       Routes.session_path(@conn, :create),
       fn f -> %>
   <div>
-    <%= text_input f, :username, placeholder: "Username" %>
+    <%= text_input f, :username, placeholder: "Usuario" %>
   </div>
   <div>
-    <%= password_input f, :password, placeholder: "Password" %>
+    <%= password_input f, :password, placeholder: "Contraseña" %>
   </div>
-  <%= submit "Log in" %>
+  <%= submit "Iniciar Sesión" %>
 <% end %>

@@ -11,12 +11,12 @@ defmodule CasWeb.SessionController do
     case Cas.authorize_url(params) do
       {:ok, token_info} ->
         conn
-        |> CasWeb.Auth.login(username)
+        |> CasWeb.Auth.login(token_info)
         |> put_flash(:info, "Welcome back!")
         |> redirect(to: Routes.page_path(conn, :index))
       {:error, _} ->
         conn
-        |> put_flash(:error, "Invalid username/password combination")
+        |> put_flash(:error, "Combinación de usuario/contraseña invalida")
         |> render("new.html")
     end
   end

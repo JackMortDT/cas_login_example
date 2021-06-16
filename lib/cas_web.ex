@@ -23,6 +23,7 @@ defmodule CasWeb do
 
       import Plug.Conn
       import CasWeb.Gettext
+      import CasWeb.Auth, only: [authenticate_user: 2]
       alias CasWeb.Router.Helpers, as: Routes
     end
   end
@@ -48,6 +49,7 @@ defmodule CasWeb do
 
       import Plug.Conn
       import Phoenix.Controller
+      import CasWeb.Auth, only: [authenticate_user: 2]
     end
   end
 

@@ -3,27 +3,31 @@ defmodule CasWeb.Auth do
   import Phoenix.Controller
 
   alias CasWeb.Router.Helpers, as: Routes
+  alias Cas.Network.Menu
 
-	def init(opts), do: opts
+  def init(opts), do: opts
 
-	def call(conn, _opts) do
-		user_id = get_session(conn, :user_id)
+  def call(conn, _opts) do
+    token_info = get_session(conn, :user_token)
 
-		cond do
-			user = conn.assigns[:current_user] ->
-				put_current_user(conn, user)
+    cond do
+      user = conn.assigns[:current_user] ->
+        put_current_user(conn, user)
 
-			user = user_id && Cas.Oauth.Cas.authorize_url(user_id) ->
-				put_current_user(conn, user)
+      user = token_info ->
+        put_current_user(conn, user)
 
-			true ->
-				assign(conn, :current_user, nil)
-		end
-	end
+      true ->
+        assign(conn, :current_user, nil)
+    end
+  end
 
-  def login(conn, user) do
+  def login(conn, token_info) do
+    menu = Menu.get_menu(token_info.username, token_info)
+    menu = struct(Menu, menu)
     conn
-    |> put_current_user(user)
+    |> put_current_user(token_info.username)
+    |> put_session(:user_token, menu)
     |> configure_session(renew: true)
   end
 
@@ -36,14 +40,15 @@ defmodule CasWeb.Auth do
     configure_session(conn, drop: true)
   end
 
-	def authenticate_user(conn, _opts) do
-		if conn.assigns.current_user do
+  def authenticate_user(conn, _opts) do
+    if conn.assigns.current_user do
       conn
     else
       conn
-      |> put_flash(:error, "You must be logged in to access that page")
+      |> put_flash(:error, "Necesitas estar logueado para entrar a esta página")
       |> redirect(to: Routes.page_path(conn, :index))
       |> halt()
     end
-	end
+  end
+
 end
